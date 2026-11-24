@@ -120,6 +120,14 @@ function validate(text: string): void {
   if (text.includes("\n") || text.includes("\r")) {
     throw new Error("entry must be a single line (no newline characters)");
   }
+  // Unicode line and paragraph separators (U+2028, U+2029) are line
+  // breaks too, but they are not \n or \r — refuse them as well, or
+  // the scorer could read one line as two.
+  if (text.includes("\u2028") || text.includes("\u2029")) {
+    throw new Error(
+      "entry must be a single line (no Unicode line separators)",
+    );
+  }
   // The hard window from the bounty rules: 1..200 characters inclusive.
   // The message reports the actual length so a failure is diagnosable.
   if (text.length < 1 || text.length > 200) {
